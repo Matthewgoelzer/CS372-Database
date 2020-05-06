@@ -42,19 +42,44 @@
             </ul>
           </div>
       </nav>
-	<div id="searchBar">
-    <br>
-        <form>
-            <legend>Search for Job or Organization</legend>
-        <input type="text"  size="21" maxlength="120"><input type="submit" value="search" class="tfbutton">
+    <!-- Search Bar -->
+      <section>
+      <div class='row justify-content-center'id="searchBar">
         <br>
-		</form>
-    </div>
-    <section>
+            <form>
+                <legend>Search for Job or Organization</legend>
+            <input type="text"  size="21" maxlength="120"><input type="submit" value="search" class="tfbutton">
+            <br>
+        </form>
+        </div>
+    </section>
+  
+    <!-- Job Field -->
+    <section class="mx-auto ">
       <br>
-        <div>
+        <div class="row justify-content-center">
             <fieldset>
-                <p>Area for displaying of jobs</p>
+              <table style="width:100%">
+                <caption style="caption-side: top;">Organization Job Postings</caption>
+                <tr>
+                  <th>Job Title</th>
+                  <th>Job ID #</th>
+                </tr>
+                <tr>
+                  <th>Job A</th>
+                  <th>12345</th>
+                  <th>
+                    <input class="btn btn-primary" type="button" value="Apply"></input>
+                  </th>
+                </tr>
+                <tr>
+                  <th>Job B</th>
+                  <th>67890</th>
+                  <th>
+                    <input class="btn btn-primary" type="button" value="Apply"></input>
+                  </th>
+                </tr>
+              </table>
             </fieldset>
         </div>
     </section>

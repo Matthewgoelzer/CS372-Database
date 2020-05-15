@@ -1,3 +1,9 @@
+DROP TABLE IF EXISTS volunteer_Histories;
+DROP TABLE IF EXISTS job_Applicants;
+DROP TABLE IF EXISTS volunteer_Profiles;
+DROP TABLE IF EXISTS job_Postings;
+DROP TABLE IF EXISTS nonprofit_Organizations;
+
 /* table for nonprofit organizations */
 CREATE TABLE nonprofit_Organizations (
     organization_Name varchar(255) NOT NULL UNIQUE,
@@ -20,6 +26,16 @@ ADD CONSTRAINT fk1 FOREIGN KEY (job_ID) REFERENCES job_Postings(job_ID);
 ALTER TABLE job_Postings
 ADD CONSTRAINT fk2 FOREIGN KEY (organization_ID) REFERENCES nonprofit_Organizations(organization_ID);
 
+/*table for volunteer profiles */
+CREATE TABLE volunteer_Profiles (
+    volunteer_ID int NOT NULL UNIQUE,
+    volunteer_Name varchar(255) NOT NULL UNIQUE,
+    volunteer_Email varchar(255) NOT NULL UNIQUE,
+    volunteer_DOB date NOT NULL,
+    location varchar(255) NOT NULL,
+    PRIMARY KEY (volunteer_ID)
+) ENGINE=InnoDB;
+
 /* table for job applicants */
 CREATE TABLE job_Applicants (
     volunteer_ID int,
@@ -29,16 +45,6 @@ CREATE TABLE job_Applicants (
     FOREIGN KEY (volunteer_ID) REFERENCES volunteer_Profiles(volunteer_ID),
     FOREIGN KEY (organization_ID) REFERENCES nonprofit_Organizations(organization_ID),
     FOREIGN KEY (job_ID) REFERENCES job_Postings(job_ID)
-) ENGINE=InnoDB;
-
-/*table for volunteer profiles */
-CREATE TABLE volunteer_Profiles (
-    volunteer_ID int NOT NULL UNIQUE,
-    volunteer_Name varchar(255) NOT NULL UNIQUE,
-    volunteer_Email varchar(255) NOT NULL UNIQUE,
-    volunteer_DOB date NOT NULL,
-    location varchar(255) NOT NULL,
-    PRIMARY KEY (volunteer_ID)
 ) ENGINE=InnoDB;
 
 /* table for volunteer histories */

@@ -1,10 +1,3 @@
-/* drop tables reverse order so fk constraints don't break */
-DROP TABLE IF EXISTS volunteer_Histories;
-DROP TABLE IF EXISTS volunteer_Profiles;
-DROP TABLE IF EXISTS job_Applicants
-DROP TABLE IF EXISTS job_Postings;
-DROP TABLE IF EXISTS nonprofit_Organizations;
-
 /* table for nonprofit organizations */
 CREATE TABLE nonprofit_Organizations (
     organization_Name varchar(255) NOT NULL UNIQUE,

@@ -3,8 +3,7 @@ CREATE TABLE nonprofit_Organizations (
     organization_Name varchar(255) NOT NULL UNIQUE,
     organization_ID int NOT NULL UNIQUE,
     job_ID int,
-    PRIMARY KEY (organization_ID),
-    FOREIGN KEY (job_ID) REFERENCES job_Postings(job_ID)
+    PRIMARY KEY (organization_ID)
 ) ENGINE=InnoDB;
 
 /* table for job postings */
@@ -12,9 +11,14 @@ CREATE TABLE job_Postings (
     job_Title varchar(255) NOT NULL UNIQUE,
     job_ID int NOT NULL UNIQUE,
     organization_ID int,
-    PRIMARY KEY (job_ID),
-    FOREIGN KEY (organization_ID) REFERENCES nonprofit_Organizations(organization_ID)
+    PRIMARY KEY (job_ID)
 ) ENGINE=InnoDB;
+
+ALTER TABLE nonprofit_Organizations
+ADD CONSTRAINT fk1 FOREIGN KEY (job_ID) REFERENCES job_Postings(job_ID);
+
+ALTER TABLE job_Postings
+ADD CONSTRAINT fk2 FOREIGN KEY (organization_ID) REFERENCES nonprofit_Organizations(organization_ID);
 
 /* table for job applicants */
 CREATE TABLE job_Applicants (

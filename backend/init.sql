@@ -4,8 +4,8 @@ CREATE TABLE nonprofit_Organizations (
     organization_ID int NOT NULL UNIQUE,
     job_ID int,
     PRIMARY KEY (organization_ID),
-    FOREIGN KEY (job_ID) REFERENCES job_Postings (job_ID)
-);
+    FOREIGN KEY (job_ID) REFERENCES job_Postings(job_ID)
+) ENGINE=InnoDB;
 
 /* table for job postings */
 CREATE TABLE job_Postings (
@@ -13,8 +13,8 @@ CREATE TABLE job_Postings (
     job_ID int NOT NULL UNIQUE,
     organization_ID int,
     PRIMARY KEY (job_ID),
-    FOREIGN KEY (organization_ID) REFERENCES nonprofit_Organizations (organization_ID)
-);
+    FOREIGN KEY (organization_ID) REFERENCES nonprofit_Organizations(organization_ID)
+) ENGINE=InnoDB;
 
 /* table for job applicants */
 CREATE TABLE job_Applicants (
@@ -22,10 +22,10 @@ CREATE TABLE job_Applicants (
     organization_ID int,
     job_ID int,
     approved BOOLEAN NOT NULL,
-    FOREIGN KEY (volunteer_ID) REFERENCES volunteer_Profiles (volunteer_ID),
-    FOREIGN KEY (organization_ID) REFERENCES nonprofit_Organizations (organization_ID),
-    FOREIGN KEY (job_ID) REFERENCES job_Postings (job_ID)
-);
+    FOREIGN KEY (volunteer_ID) REFERENCES volunteer_Profiles(volunteer_ID),
+    FOREIGN KEY (organization_ID) REFERENCES nonprofit_Organizations(organization_ID),
+    FOREIGN KEY (job_ID) REFERENCES job_Postings(job_ID)
+) ENGINE=InnoDB;
 
 /*table for volunteer profiles */
 CREATE TABLE volunteer_Profiles (
@@ -35,14 +35,14 @@ CREATE TABLE volunteer_Profiles (
     volunteer_DOB date NOT NULL,
     location varchar(255) NOT NULL,
     PRIMARY KEY (volunteer_ID)
-);
+) ENGINE=InnoDB;
 
 /* table for volunteer histories */
 CREATE TABLE volunteer_Histories (
     volunteer_ID int,
     job_ID int,
     organization_ID int,
-    FOREIGN KEY (volunteer_ID) REFERENCES volunteer_Profiles (volunteer_ID),
-    FOREIGN KEY (job_ID) REFERENCES job_Postings (job_ID),
-    FOREIGN KEY (organization_ID) REFERENCES nonprofit_Organizations (organization_ID)
-);
+    FOREIGN KEY (volunteer_ID) REFERENCES volunteer_Profiles(volunteer_ID),
+    FOREIGN KEY (job_ID) REFERENCES job_Postings(job_ID),
+    FOREIGN KEY (organization_ID) REFERENCES nonprofit_Organizations(organization_ID)
+) ENGINE=InnoDB;

@@ -46,16 +46,19 @@
       <section>
       <div class='row justify-content-center'id="searchBarDiv">
         <br>
-            <form>
+          <form>
                 <legend>Search for Job or Organization</legend>
-            <input id="searchBar" type="text"  size="21" maxlength="120" required> <input id="searchButton" type="button" class="btn btn-primary" value="Search">
+            <input id="searchBar" type="text"  size="21" maxlength="120"> <input id="searchButton" type="button" class="btn btn-primary" value="Search">
             <br>
-        </form>
+          </form>
+        </div>
+        <div id="forms" class='row justify-content-center'>
+
         </div>
     </section>
   
     <!-- Job Field -->
-    <section class="mx-auto ">
+    <section class="mx-auto" id="searchPage">
       <br>
         <div class="row justify-content-center">
             <fieldset>
@@ -83,7 +86,35 @@
             </fieldset>
         </div>
     </section>
-    <script type="text/javascript" src="client.js"></script>
+    <section>
+      <div class="row justify-content-center">
+        <table id="mainTable">
+          <thead>
+            <tr>
+              <th>Job Title</th>
+              <th>Job ID#</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="bodyTable">
+            <tr >
+              <td id="firstR"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      
+
+    </section>
+    <script type="text/javascript" >
+      document.addEventListener('DOMContentLoaded', (event) => {
+          loadSearchPage();
+        });
+    </script>
+    <script type="text/javascript" src="/client.js">
+      
+    </script>
 </body>
 </html>
 

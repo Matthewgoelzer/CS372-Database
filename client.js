@@ -1,45 +1,63 @@
 
-document.addEventListener('DOMContentLoaded', searchButton);
+function loadSearchPage() {
+	console.log("here1");
+	var req = new XMLHttpRequest();       
+	var req = new XMLHttpRequest();       
+	
+	req.open("GET", "/SearchLoaded", true);
+	req.setRequestHeader('Content-Type', 'application/json');
+	req.addEventListener('load',function(){
+		if(req.status >= 200 && req.status < 400){
+			console.log(JSON.parse(req.responseText));
+			makeSearchTable(JSON.parse(req.responseText));
+		}
+		else {
+			console.log("Error in network request: " + req.statusText);
+		}
+	});
+	req.send();
+	event.preventDefault();
+};
 
-// function searchButton() {
-    document.getElementById("searchButton").addEventListener('click', function (event) {
-		console.log("here1")
-		var req = new XMLHttpRequest();       
-        var dataSend =  {search:null};
-        dataSend.search = document.getElementById('searchBar').value || null;
-        
-        if(dataSend.name === null) {
-        	alert("Name cannot be null");
-        	event.preventDefault();
-        	return;
-        }
-        req.open("GET", "/jobsAndSearch.html", true);
-  		req.setRequestHeader('Content-Type', 'application/json');
-        req.addEventListener('load',function(){
-    		if(req.status >= 200 && req.status < 400){
-      			makeTable(JSON.parse(req.responseText));
-    		}
-    		else {
-        		console.log("Error in network request: " + req.statusText);
-      		}
-  		});
- 
-        req.send(JSON.stringify(dataSend));
-        event.preventDefault();
-    })  
+document.getElementById("searchButton").addEventListener('click', function (event) {
+	console.log("here2");
+	var req = new XMLHttpRequest();       
+	var dataSend =  {search:null};
+	dataSend.search = document.getElementById('searchBar').value || null;
+	
+	if(dataSend.search=== null) {
+		alert("Search cannot be null");
+		event.preventDefault();
+		return;
+	}
+	req.open("POST", "/Search", true);
+	req.setRequestHeader('Content-Type', 'application/json');
+	req.addEventListener('load',function(){
+		if(req.status >= 200 && req.status < 400){
+			console.log(req.responseText);
+			makeSearchTable(JSON.parse(req.responseText));
+		}
+		else {
+			console.log("Error in network request: " + req.statusText);
+		}
+	});
+	console.log(dataSend);
+	req.send(JSON.stringify(dataSend));
+	event.preventDefault();
+})  
+
+
+
+// function printTable() {
+	
+// 	var req = new XMLHttpRequest();
+//     req.open("GET", '/', true);
+//     req.send(null);
+//     makeTable(result);
+//     event.preventDefault();
 // }
 
-
-function printTable() {
-	
-	var req = new XMLHttpRequest();
-    req.open("GET", '/', true);
-    req.send(null);
-    makeTable(result);
-    event.preventDefault();
-}
-
-function makeTable(responseObj) {
+function makeSearchTable(responseObj) {
 	//delete old table
 	document.getElementById("mainTable").removeChild(document.getElementById("bodyTable"));
 	//amke new table 
@@ -49,60 +67,32 @@ function makeTable(responseObj) {
 	//make a row for each row in returned Json data
 	responseObj.forEach(function(row) {
 		var newRow = document.createElement("tr");
-		newRow.id = row["id"];
+		newRow.id = row["job_ID"];
 
-		var name1 = document.createElement("td");
-		name1.id = "name"+ row["id"]
-		name1.textContent = row["name"];
-		newRow.appendChild(name1);
+		var jobTitle1 = document.createElement("td");
+		jobTitle1.id = "job_Title"+ row["job_ID"]
+		jobTitle1.textContent = row["job_Title"];
+		newRow.appendChild(jobTitle1);
 
-		var rep1 = document.createElement("td");
-		rep1.id = "rep"+ row["id"]
-		rep1.textContent = row["reps"];
-		newRow.appendChild(rep1);
+		var jobID1 = document.createElement("td");
+		jobID1.id = "job_ID"+ row["job_ID"]
+		jobID1.textContent = row["job_ID"];
+		newRow.appendChild(jobID1);
 
-		var weight1 = document.createElement("td");
-		weight1.id = "weight"+ row["id"];
-		weight1.textContent = row["weight"];
-		newRow.appendChild(weight1);
-
-		var date1 = document.createElement("td");
-		date1.id = "date"+ row["id"]
-		date1.textContent = row["date"];
-		newRow.appendChild(date1);
-
-		var lbs1 = document.createElement("td");
-		lbs1.id = "lbs"+ row["id"];
-		if(row["lbs"] == 1) {
-			lbs1.textContent = "lbs";
-		}
-		else {
-			lbs1.textContent = "kg";
-		}
-		newRow.appendChild(lbs1);
-		
-		//make delete button
-		var deleteCell = document.createElement("td")
-		deleteCell.id = "delete"+ row["id"]
-		var deleteBtn = document.createElement('button');
-		deleteBtn.id = "deleteBtn"+ row["id"];
-		deleteCell.appendChild(deleteBtn);
-		newRow.appendChild(deleteCell);
-		deleteBtn.textContent = "Delete"
-
-		//make edit button
-		var editCell = document.createElement("td")
-		editCell.id = "edit"+ row["id"]
-		var editBtn = document.createElement('button');
-		editBtn.id = "editBtn"+ row["id"];
-		editCell.appendChild(editBtn);
-		newRow.appendChild(editCell);
-		editBtn.textContent = "Edit";
+		//make apply button
+		var applyCell = document.createElement("td")
+		applyCell.id = "apply"+ row["job_ID"]
+		var applyBtn = document.createElement('button');
+		applyBtn.id = "applyBtn"+ row["job_ID"];
+		applyBtn.className = "btn btn-primary";
+		applyCell.appendChild(applyBtn);
+		newRow.appendChild(applyCell);
+		applyBtn.textContent = "Apply";
 		
 		//add row
 		bodyTable.appendChild(newRow);
-		document.getElementById("editBtn" + row["id"]).addEventListener("click", makeEditForm);
-		document.getElementById("deleteBtn" + row["id"]).addEventListener("click", deleteRow);
+		document.getElementById("applyBtn" + row["job_ID"]).addEventListener("click", makeApplyForm);
+		// document.getElementById("deleteBtn" + row["id"]).addEventListener("click", deleteRow);
 
 	})
 };
@@ -136,78 +126,38 @@ function deleteRow(event) {
 	Arguments: Event of edit button from row. 
 	Returns: None.
 */
-function makeEditForm(event) {
+function makeApplyForm(event) {
 	//get row id
 	var rowID = event.target.parentElement.parentElement.id;
-
+	console.log(rowID);
 	//make edit form 
-	var editField = document.createElement("fieldset");
-	editField.id = "editField";
-	document.getElementById("forms").appendChild(editField);
-	var editLegend = document.createElement("legend")
-	editLegend.id = "editLegend";
-	editLegend.textContent = "Edit Exercise";
-	document.getElementById("editField").appendChild(editLegend);
-	var editForm = document.createElement("form");
-	editForm.id = "editF";
-	document.getElementById("editField").appendChild(editForm);
+	var applyField = document.createElement("fieldset");
+	applyField.id = "applyField";
+	document.getElementById("forms").appendChild(applyField);
+	var applyLegend = document.createElement("legend")
+	applyLegend.id = "applyLegend";
+	applyLegend.textContent = "Apply";
+	document.getElementById("applyField").appendChild(applyLegend);
+	var applyForm = document.createElement("form");
+	applyForm.id = "applyF";
+	document.getElementById("applyField").appendChild(applyForm);
 	
 	var nameLabel =document.createElement('label');
-	nameLabel.textContent = "Machine Name: ";
-	document.getElementById("editF").appendChild(nameLabel)
-	var editName1 = document.createElement('input');
-	editName1.type = "text";
-	editName1.id = "editName";
-	editName1.value = document.getElementById("name"+rowID).textContent; 
-	document.getElementById("editF").appendChild(editName1);
+	nameLabel.textContent = "Name: ";
+	document.getElementById("applyF").appendChild(nameLabel)
+	var applyName1 = document.createElement('input');
+	applyName1.type = "text";
+	applyName1.id = "applyName";
+	// applyName1.value = document.getElementById("name"+ rowID).textContent; 
+	document.getElementById("applyF").appendChild(applyName1);
 
-	var repLabel =document.createElement('label');
-	repLabel.textContent = "Number of Reps:";
-	document.getElementById("editF").appendChild(repLabel)
-	var editReps = document.createElement('input');
-	editName.type = "text";
-	editReps.id = "editRep";
-	editReps.value = document.getElementById("rep" + rowID).textContent;
-	document.getElementById("editF").appendChild(editReps);
-
-	var weightLabel =document.createElement('label');
-	weightLabel.textContent = " Weight:";
-	document.getElementById("editF").appendChild(weightLabel)
-	var editWeight1 = document.createElement('input');
-	editWeight1.type = "text";
-	editWeight1.id = "editWeight";
-	editWeight1.value = document.getElementById("weight" + rowID).textContent;
-	document.getElementById("editF").appendChild(editWeight1);
-
-	var dateLabel =document.createElement('label');
-	dateLabel.textContent = " Date:";
-	document.getElementById("editF").appendChild(dateLabel)
-	var editDate = document.createElement('input');
-	editDate.type = "date";
-	editDate.id = "editDate";
-	editDate.value = document.getElementById("date" + rowID).textContent;
-	document.getElementById("editF").appendChild(editDate);
-
-	var lbsLabel =document.createElement('label');
-	lbsLabel.textContent = "Units in lbs";
-	document.getElementById("editF").appendChild(lbsLabel)
-	var editLbs = document.createElement('input');
-	editLbs.type = "checkbox";
-	editLbs.id = "editLbs";
-	if(document.getElementById("lbs" + rowID).textContent === "lbs") {
-		editLbs.checked = 1;
-	}
-	else {
-		editLbs.checked = 0;
-	}
-	document.getElementById("editF").appendChild(editLbs);
-
-	var editSubBtn = document.createElement("button");
-	editSubBtn.textContent = "Submit";
-	editSubBtn.id = "editSB";
-	editSubBtn.name = rowID;
-	document.getElementById("editF").appendChild(editSubBtn);
-	document.getElementById("editSB").addEventListener("click", editRow);
+	var applySubBtn = document.createElement("button");
+	applySubBtn.textContent = "Submit";
+	applySubBtn.id = "applySB";
+	applySubBtn.className = "btn btn-primary";
+	applySubBtn.name = rowID;
+	document.getElementById("applyF").appendChild(applySubBtn);
+	document.getElementById("applySB").addEventListener("click", applyRow);
 	
 
 }
@@ -218,33 +168,31 @@ function makeEditForm(event) {
 	Arguments: Edit form is made. 
 	Returns: None.
 */
-function editRow() {
+function applyRow() {
 	var req = new XMLHttpRequest();
-	var eId = '?id=' + document.getElementById("editSB").name;
-	var eName = '&name=' + document.getElementById("editName").value || null;
-	var eRep = '&reps=' + document.getElementById("editRep").value || null;
-	var eWeight = '&weight=' + document.getElementById("editWeight").value || null;
-	var eDate = '&date=' + document.getElementById("editDate").value || null;
-	var eLbs = null;
-	 if(document.getElementById("editLbs").checked) {
-	 	var eLbs = '&lbs=' + 1;
-	  }
-	  else {
-	  	eLbs = '&lbs=' + 0;
-	  }
-  
-    req.open("put", '/' + eId + eName + eRep + eWeight + eDate + eLbs, true);
-  	
-    req.addEventListener('load',function(){
+	var dataSend =  {job_ID:null, volunteer_Name:null};
+	dataSend.job_ID = document.getElementById("applySB").name;
+	dataSend.volunteer_Name = document.getElementById("applyName").value || null;
+	
+	if(dataSend.volunteer_Name === null) {
+		alert("Name cannot be null");
+		event.preventDefault();
+		return;
+	}
+	dataSend2 = JSON.stringify(dataSend)
+	console.log(dataSend2);
+	req.open("POST", "/jobApply", true);
+	req.setRequestHeader('Content-Type', 'application/json');
+	req.addEventListener('load',function(){
 		if(req.status >= 200 && req.status < 400){
-  			makeTable(JSON.parse(req.responseText));
+			// makeTable(JSON.parse(req.responseText));
 		}
 		else {
-    		console.log("Error in network request: " + req.statusText);
-  		}
+			console.log("Error in network request: " + req.statusText);
+		}
 	});
- 
-    req.send(null);
-    document.getElementById("editField").remove()
-    event.preventDefault();
+		  
+	req.send(dataSend2);
+	document.getElementById("applyField").remove()
+	event.preventDefault();
 }

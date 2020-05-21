@@ -47,7 +47,8 @@
       <div class='row justify-content-center'id="searchBarDiv">
         <br>
           <form>
-                <legend>Search for Job or Organization</legend>
+              <legend>Search for Job using Job Title or Organization Name</legend>
+             
             <input id="searchBar" type="text"  size="21" maxlength="120"> <input id="searchButton" type="button" class="btn btn-primary" value="Search">
             <br>
           </form>
@@ -59,34 +60,6 @@
   
     <!-- Job Field -->
     <section class="mx-auto" id="searchPage">
-      <br>
-        <div class="row justify-content-center">
-            <fieldset>
-              <table style="width:100%">
-                <caption style="caption-side: top;">Organization Job Postings</caption>
-                <tr>
-                  <th>Job Title</th>
-                  <th>Job ID #</th>
-                </tr>
-                <tr>
-                  <th>Job A</th>
-                  <th>12345</th>
-                  <th>
-                    <input class="btn btn-primary" type="button" value="Apply"></input>
-                  </th>
-                </tr>
-                <tr>
-                  <th>Job B</th>
-                  <th>67890</th>
-                  <th>
-                    <input class="btn btn-primary" type="button" value="Apply"></input>
-                  </th>
-                </tr>
-              </table>
-            </fieldset>
-        </div>
-    </section>
-    <section>
       <div class="row justify-content-center">
         <table id="mainTable">
           <thead>
@@ -103,17 +76,13 @@
           </tbody>
         </table>
       </div>
-      
-      
-
     </section>
     <script type="text/javascript" >
       document.addEventListener('DOMContentLoaded', (event) => {
           loadSearchPage();
         });
     </script>
-    <script type="text/javascript" src="/client.js">
-      
+    <script type="text/javascript" src="/clientJobSearch.js">
     </script>
 </body>
 </html>

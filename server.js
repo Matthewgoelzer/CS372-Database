@@ -52,10 +52,72 @@ app.post('/Search', function(req,res,next){
             return;
         }
         context.results = JSON.stringify(rows);
-        console.log(context.results);
-        res.send(JSON.stringify(rows));
+        console.log(context);
+        if(context.results == '[]') {
+            console.log("Here");
+            mysql.pool.query('SELECT * FROM `job_Postings` WHERE organization_ID = (SELECT organization_ID FROM `nonprofit_Organizations` WHERE organization_Name =?)', [req.body.search], function(err, rows, fields){
+                if(err){
+                    next(err);
+                    return;
+                }
+                context.results = JSON.stringify(rows);
+                console.log(context.results);
+               
+                res.send(JSON.stringify(rows));
+              
+                    
+            });
+        }
+        else{
+            res.send(JSON.stringify(rows));
+        }
+       
     });
 });
+app.post('/NewVolP', function(req,res,next){
+    // get data from forms and add to the table called user..
+    mysql.pool.query('INSERT INTO `volunteer_Profiles` (`volunteer_ID`, `volunteer_Name`, `volunteer_Email`, `volunteer_DOB`, `location`) VALUES (NULL, ?, ?, ?, ?)', 
+    [ req.body.volunteer_Name, req.body.volunteer_Email, req.body.volunteer_DOB, req.body.location], function (err, result) {
+        if (err) {
+            // Throw your error output here.
+            console.log("An error occurred.");
+        } else {
+            // Throw a success message here.
+            console.log("1 record successfully inserted into db");
+        }
+    });
+});
+
+app.post('/NewOrgP', function(req,res,next){
+    // get data from forms and add to the table called user..
+    console.log(req.body);
+    mysql.pool.query('INSERT INTO `nonprofit_Organizations` (`organization_Name`, `organization_ID`) VALUES (?, NULL)', 
+    [req.body.organization_Name], function (err, result) {
+        if (err) {
+            // Throw your error output here.
+            console.log("An error occurred.");
+        } else {
+            // Throw a success message here.
+            console.log("1 record successfully inserted into db");
+        }
+    });
+});
+
+app.post('/NewJob', function(req,res,next){
+    // get data from forms and add to the table called user..
+    console.log(req.body);
+    mysql.pool.query('INSERT INTO `job_Postings` (`job_Title`, `job_ID`, `organization_ID`) VALUES (?, NULL, (SELECT organization_ID FROM nonprofit_Organizations WHERE organization_Name = ?))', 
+    [req.body.job_Title, req.body.organization_Name], function (err, result) {
+        if (err) {
+            // Throw your error output here.
+            console.log("An error occurred.");
+        } else {
+            // Throw a success message here.
+            console.log("1 record successfully inserted into db");
+        }
+    });
+});
+
 
 app.listen(port, function() {
     console.log("running");

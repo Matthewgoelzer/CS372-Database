@@ -3,7 +3,7 @@ var app = express();
 var bodyPar = require('body-parser');
 var mysql = require('./dbcon.js');
 app.use(express.static('public'));
-var port = process.env.PORT || 7630
+var port = process.env.PORT || 7629
 app.use(bodyPar.urlencoded({extended: false}));
 app.use(bodyPar.json());
 

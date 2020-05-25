@@ -41,45 +41,39 @@
 	  </nav>
 	  <br>
 	<section>
+		<div class='row justify-content-center'id="orgSignInBarDiv">
+			<br>
+			  <form>
+				  <legend>Organization Sign-In</legend>
+				  <label for="orgSignInBar">Name:</label>
+				<input id="orgSignInBar" type="text"  size="21" maxlength="120"> <input id="orgSignInButton" type="button" class="btn btn-primary" value="Enter">
+				<br>
+			  </form>
+			</div>
 		<div class="row justify-content-center">
 			<div>
-				<legend>Organization Name</legend>
-				<p>Organization ID #</p>
+				<h2>Organization Name <p id="orgName"></p></h2>
+				<h2 >Organization ID # <p id="orgIDNum"></p></h2>
 	
-				<table style="width:100%">
-					<caption style="caption-side: top;">Organization Job Postings</caption>
-					<tr>
-						<th>Job Title</th>
-						<th>Job ID #</th>
-						<th>View Applicants</th>
-						<th>Remove Job Posting</th>
-					</tr>
-					<tr>
-						<th>Job A</th>
-						<th>12345</th>
-						<th>
-							<a href="jobPage.html" class="btn btn-primary">Go</a>
-						</th>
-						<th>
-							<input class="btn btn-primary" value="Remove Posting" type='button'></input>
-						</th>
-					</tr>
-					<tr>
-						<th>Job B</th>
-						<th>67890</th>
-						<th>
-							<a href="jobPage.html" class="btn btn-primary">Go</a>
-						</th>
-						<th>
-							<input class="btn btn-primary" value="Remove Posting" type='button'></input>
-						</th>
-					</tr>
-				</table>
+		
+			<div class="col-12 justify-content-center">
+				<input id="orgBackButton" type="button" class="btn btn-primary" value="Go Back">	
+
+				<table id="orgJobTable" style="width:100%" >
+					<thead id="headOrgJobTable">
+					  
+					</thead>
+					<tbody id="bodyOrgJobTable">
+					  <tr >
+						<td id="firstROrgJob"></td>
+					  </tr>
+					</tbody>
+				  </table>
 			</div>
 		</div>
-			
 	</section>
-	
+	<script type="text/javascript" src="/orgProfile.js"></script>
+
 </body>
 
 </html>

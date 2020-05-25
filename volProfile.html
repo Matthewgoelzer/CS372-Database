@@ -41,6 +41,17 @@
 	  </nav>
 	  <br>
 	  <section>
+		<div class='row justify-content-center'id="volSignInBarDiv">
+		  <br>
+			<form>
+				<legend>Volunteer Sign-In</legend>
+			   
+			  <input id="volSignInBar" type="text"  size="21" maxlength="120"> <input id="volSignInButton" type="button" class="btn btn-primary" value="Enter">
+			  <br>
+			</form>
+		  </div>
+	  </section>
+	  <section>
 		<div class="row justify-content-center">
 			<div>
 				<legend>Volunteer Name</legend>
@@ -48,36 +59,47 @@
 				<p>Volunteer Email</p>
 				<p>Volunteer DOB</p>
 				<p>Location</p>
-
-				<table style="width:100%">
-					<caption style="caption-side: top;">Application History</caption>
-					<tr>
-						<th>Job Title </th>
-						<th>Job ID #</th>
-						<th>Organization ID </th>
-						<th>Remove Application</th>
-					</tr>
-					<tr>
-						<th>Job A</th>
-						<th>12345</th>
-						<th>99999</th>
-						<th>
-							<input class="btn btn-primary" value="Remove Application" type='button'></input>
-						</th>
-					</tr>
-					<tr>
-						<th>Job B</th>
-						<th>67890</th>
-						<th>00000</th>
-						<th>
-							<input class="btn btn-primary" value="Remove Application" type='button'></input>
-						</th>
-					</tr>
-				</table>
 			</div>
 		</div>
 </section>
-	
+<!-- History -->
+<section class="mx-auto" id="volHistPage">
+	<div class="row justify-content-center">
+		<div class="col-6">
+			<table id="appHistTable">
+				<thead>
+				  <tr>
+					<th>Job Title</th>
+					<th>Job ID#</th>
+					<th></th>
+				  </tr>
+				</thead>
+				<tbody id="bodyAppHistTable">
+				  <tr >
+					<td id="firstRAppHist"></td>
+				  </tr>
+				</tbody>
+			  </table>
+		</div>
+		<div class="col-6">
+			<table id="jobHistTable">
+				<thead>
+				  <tr>
+					<th>Job Title</th>
+					<th>Job ID#</th>
+					<!-- <th>Approved</th> -->
+				  </tr>
+				</thead>
+				<tbody id="bodyjobHistTable">
+				  <tr >
+					<td id="firstRJobHist"></td>
+				  </tr>
+				</tbody>
+			  </table>
+		</div>
+	</div>
+  </section>
+  <script type="text/javascript" src="/volunProfile.js"></script>
 </body>
 
 </html>

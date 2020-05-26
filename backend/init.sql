@@ -32,7 +32,7 @@ CREATE TABLE job_Applicants (
     job_ID int,
     approved BOOLEAN NOT NULL,
     FOREIGN KEY (volunteer_ID) REFERENCES volunteer_Profiles(volunteer_ID),
-    FOREIGN KEY (job_ID) REFERENCES job_Postings(job_ID),
+    ADD CONTRAINT FOREIGN KEY (job_ID) REFERENCES job_Postings(job_ID) ON DELETE CASCADE,
     PRIMARY KEY(volunteer_ID, job_ID)
 ) ENGINE=InnoDB;
 
@@ -40,9 +40,9 @@ CREATE TABLE job_Applicants (
 CREATE TABLE volunteer_Histories (
     volunteer_ID int,
     job_ID int,
-    FOREIGN KEY (volunteer_ID) REFERENCES volunteer_Profiles(volunteer_ID),
-    FOREIGN KEY (job_ID) REFERENCES job_Postings(job_ID)
-) ENGINE=InnoDB;
+    job_Title char(255),
+    FOREIGN KEY (volunteer_ID) REFERENCES volunteer_Profiles(volunteer_ID)
+    ) ENGINE=InnoDB;
 
 INSERT INTO nonprofit_Organizations (organization_Name) VALUES ("nonprofit-organization-1");
 
@@ -52,4 +52,4 @@ INSERT INTO volunteer_Profiles (volunteer_Name, volunteer_Email, volunteer_DOB, 
 
 INSERT INTO job_Applicants (volunteer_ID, job_ID, approved) VALUES ((SELECT volunteer_ID FROM volunteer_Profiles WHERE volunteer_Name = "volunteer-1"), (SELECT job_ID FROM job_Postings WHERE job_Title = "job_Title-1"), FALSE);
 
-INSERT INTO volunteer_Histories (volunteer_ID, job_ID) VALUES ((SELECT volunteer_ID FROM volunteer_Profiles WHERE volunteer_Name = "volunteer-1"), (SELECT job_ID FROM job_Postings WHERE job_Title = "job_Title-1"));
+INSERT INTO volunteer_Histories (volunteer_ID, job_ID, job_Title) VALUES ((SELECT volunteer_ID FROM volunteer_Profiles WHERE volunteer_Name = "volunteer-1"), (SELECT job_ID FROM job_Postings WHERE job_Title = "job_Title-1"), "job_Title-1");

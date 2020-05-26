@@ -43,6 +43,7 @@ app.post("/jobApply", function(req, res) {
         console.log("1 record successfully inserted into db");
     }
     });
+    
 });
 app.post('/Search', function(req,res,next){
     var context = {};
@@ -54,7 +55,6 @@ app.post('/Search', function(req,res,next){
         context.results = JSON.stringify(rows);
         console.log(context);
         if(context.results == '[]') {
-            console.log("Here");
             mysql.pool.query('SELECT * FROM `job_Postings` WHERE organization_ID = (SELECT organization_ID FROM `nonprofit_Organizations` WHERE organization_Name =?)', [req.body.search], function(err, rows, fields){
                 if(err){
                     next(err);
@@ -121,24 +121,48 @@ app.post('/NewJob', function(req,res,next){
 
 app.post('/DeleteVolApp',function(req,res,next){
     //delete row with id
-    mysql.pool.query("DELETE FROM `job_Applicants` WHERE job_ID=? AND volunteer_ID = (SELECT volunteer_ID FROM `volunteer_Profiles` WHERE volunteer_Name = ?)", [req.query.job_ID, req.query.name], function(err, result){
+    var context = {};
+    mysql.pool.query("DELETE FROM `job_Applicants` WHERE job_ID=? AND volunteer_ID = (SELECT volunteer_ID FROM `volunteer_Profiles` WHERE volunteer_Name = ?)", [req.body.job_ID, req.body.name], function(err, result){
         if(err){
             next(err);
             return;
         }
-        mysql.pool.query('SELECT job_Postings.job_Title, job_Applicants.job_ID FROM `job_Applicants` INNER JOIN `job_Postings` ON job_Applicants.job_ID = job_Postings.job_ID WHERE volunteer_ID = (SELECT volunteer_ID FROM `volunteer_Profiles` WHERE volunteer_Name = ?)', [req.body.name], function(err, rows, fields){
+    
+    mysql.pool.query('SELECT job_Postings.job_Title, job_Applicants.job_ID FROM `job_Applicants` INNER JOIN `job_Postings` ON job_Applicants.job_ID = job_Postings.job_ID WHERE volunteer_ID = (SELECT volunteer_ID FROM `volunteer_Profiles` WHERE volunteer_Name = ?)', [req.body.name], function(err, rows){
+        if(err){
+            next(err);
+            return;
+        }
+        context.volAppHist = rows;
+        res.send(JSON.stringify(context));
+     });
+    });
+});
+
+app.post('/DeleteOrgJob',function(req,res,next){
+    //delete row with id
+    var context = {};
+    mysql.pool.query("DELETE FROM `job_Postings` WHERE job_ID=?", [req.body.job_ID], function(err, result){
+        if(err){
+            next(err);
+            return;
+        }
+    
+        mysql.pool.query('SELECT job_Title, job_ID, organization_ID FROM `job_Postings`  WHERE organization_ID = (SELECT organization_ID FROM `nonprofit_Organizations` WHERE organization_Name = ?)', [req.body.name], function(err, rows, fields){
             if(err){
                 next(err);
                 return;
             }
-            context.volAppHist = rows;
+            context.orgJobs = rows;
+            console.log(context);
             res.send(JSON.stringify(context));
-		  });
+        });
     });
 });
 
 app.post('/VolSignIn', function(req,res,next){
     var context = {};
+    
     mysql.pool.query('SELECT job_Postings.job_Title, job_Applicants.job_ID FROM `job_Applicants` INNER JOIN `job_Postings` ON job_Applicants.job_ID = job_Postings.job_ID WHERE volunteer_ID = (SELECT volunteer_ID FROM `volunteer_Profiles` WHERE volunteer_Name = ?)', [req.body.name], function(err, rows, fields){
         if(err){
             next(err);
@@ -146,17 +170,25 @@ app.post('/VolSignIn', function(req,res,next){
         }
         context.volAppHist = rows;
         
-    });
-    mysql.pool.query('SELECT job_Postings.job_Title, volunteer_Histories.job_ID FROM `volunteer_Histories` INNER JOIN `job_Postings` ON volunteer_Histories.job_ID = job_Postings.job_ID WHERE volunteer_ID = (SELECT volunteer_ID FROM `volunteer_Profiles` WHERE volunteer_Name = ?)', [req.body.name], function(err, rows, fields){
-        if(err){
-            next(err);
-            return;
-        }
+        mysql.pool.query('SELECT * FROM `volunteer_Profiles` WHERE volunteer_ID = (SELECT volunteer_ID FROM `volunteer_Profiles` WHERE volunteer_Name = ?)', [req.body.name], function(err, rows, fields){
+            if(err){
+                next(err);
+                return;
+            }
+            context.volInfo = rows;
         
-        context.volJobHist = rows;
-        console.log(context);
-        res.send(JSON.stringify(context));
-    
+            mysql.pool.query('SELECT job_Title, job_ID FROM `volunteer_Histories` WHERE volunteer_ID = (SELECT volunteer_ID FROM `volunteer_Profiles` WHERE volunteer_Name = ?)', [req.body.name], function(err, rows, fields){
+            if(err){
+                next(err);
+                return;
+            }
+            
+            context.volJobHist = rows;
+            context.req = req.body;
+            console.log(context);
+            res.send(JSON.stringify(context));
+        });
+    });
     });
 });
 
@@ -168,10 +200,18 @@ app.post('/OrgSignIn', function(req,res,next){
             return;
         }
         context.orgJobs = rows;
-        console.log(context);
+        
+        
+       
+    });
+    mysql.pool.query('SELECT organization_ID FROM `nonprofit_Organizations` WHERE organization_Name = ?', [req.body.name], function(err, rows, fields){
+        if(err){
+            next(err);
+            return;
+        }
+        context.orgInfo = rows;
         res.send(JSON.stringify(context));
     });
-    
 });
 
 app.post('/OrgJobApps', function(req,res,next){
@@ -185,10 +225,50 @@ app.post('/OrgJobApps', function(req,res,next){
         console.log(context);
         res.send(JSON.stringify(context));
     });
-    
-        
-    
-    
+});
+
+app.post('/UpdateApp',function(req,res,next){
+    //delete row with id
+    var context = {};
+    mysql.pool.query("UPDATE `job_Applicants` SET approved = ? WHERE job_ID=? AND volunteer_ID = ?", [req.body.approved, req.body.job_ID, req.body.volunteer_ID], function(err, result){
+        if(err){
+            next(err);
+            return;
+        }
+        if(req.body.approved == 1) {
+            mysql.pool.query('INSERT INTO `volunteer_Histories` (`volunteer_ID`, `job_ID`, `job_Title`) VALUES (?, ?, (SELECT job_Title FROM `job_Postings` WHERE job_ID = ?))', [req.body.volunteer_ID,  req.body.job_ID, req.body.job_ID],function (err, result) {
+                if (err) {
+                    // Throw your error output here.
+                    console.log("An error occurred.");
+                } else {
+                    // Throw a success message here.
+                    console.log("1 record successfully inserted into db");
+                }
+            });
+        }
+        else {
+            if(mysql.pool.query('SELECT * FROM `volunteer_Histories`  WHERE volunteer_ID = ? AND job_ID = ?', [req.body.volunteer_ID,  req.body.job_ID],function (err, result) {})) {
+                mysql.pool.query('DELETE FROM `volunteer_Histories`  WHERE volunteer_ID = ? AND job_ID = ?', [req.body.volunteer_ID,  req.body.job_ID],function (err, result) {
+                    if (err) {
+                        // Throw your error output here.
+                        console.log("An error occurred.");
+                    } else {
+                        // Throw a success message here.
+                        console.log("1 record successfully inserted into db");
+                    }
+                });
+            }
+        }
+        mysql.pool.query('SELECT job_Applicants.volunteer_ID, volunteer_Profiles.volunteer_Name, job_Applicants.approved FROM `job_Applicants` INNER JOIN `volunteer_Profiles` ON job_Applicants.volunteer_ID = volunteer_Profiles.volunteer_ID WHERE job_ID = ?', [req.body.job_ID], function(err, rows, fields){
+            if(err){
+                next(err);
+                return;
+            }
+            context.orgJobs = rows;
+            console.log(context);
+            res.send(JSON.stringify(context));
+        });
+    });
 });
 
 app.listen(port, function() {

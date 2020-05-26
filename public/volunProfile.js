@@ -4,7 +4,7 @@ document.getElementById("volSignInButton").addEventListener('click', function (e
 	var req = new XMLHttpRequest();       
 	var dataSend =  {name:null};
 	dataSend.name = document.getElementById('volSignInBar').value || null;
-	console.log(dataSend.name);
+	// console.log(dataSend.name);
 	if(dataSend.name=== null) {
 		alert("Search cannot be null");
 		event.preventDefault();
@@ -19,23 +19,31 @@ document.getElementById("volSignInButton").addEventListener('click', function (e
 				alert("No Volunteer Found");
 			}
 			else {
-                makeVolAppHistTable(JSON.parse(req.responseText), dataSend.name);
-                makeVolJobHistTable(JSON.parse(req.responseText));
+				var volRes = JSON.parse(req.responseText);
+				console.log(volRes);
+
+                makeVolAppHistTable(volRes, dataSend.name);
+				makeVolJobHistTable(volRes);
+				document.getElementById("volNameInfo").textContent = volRes.volInfo[0].volunteer_Name;
+				document.getElementById("volIDInfo").textContent = volRes.volInfo[0].volunteer_ID;
+				document.getElementById("volEmailInfo").textContent = volRes.volInfo[0].volunteer_Email;
+				document.getElementById("volDOBInfo").textContent = volRes.volInfo[0].volunteer_DOB;
+				document.getElementById("volLocInfo").textContent = volRes.volInfo[0].location;
 			}
-			
 		}
 		else {
 			console.log("Error in network request: " + req.statusText);
 		}
 	});
-	// console.log(dataSend);
+	console.log(dataSend);
 	req.send(JSON.stringify(dataSend));
 	event.preventDefault();
 });
 
 function makeVolAppHistTable(responseObj, volunteer) {
+	
 	var appHist = responseObj.volAppHist;
-	console.log(volunteer);
+	console.log(appHist);
 	//delete old table
 	document.getElementById("appHistTable").removeChild(document.getElementById("bodyAppHistTable"));
 	//amke new table 
@@ -79,24 +87,25 @@ function makeVolAppHistTable(responseObj, volunteer) {
 
 function deleteJobAppForm(event, volName) {
 	var req = new XMLHttpRequest();
-	var url = '?id=';
-	var name = '&name=' + volName;
+	
 	console.log(volName);
-    var deleteSend = null;
-    deleteSend = event.target.parentElement.parentElement.id
-   console.log(deleteSend)
-    req.open("delete", '/DeleteVolApp' + url + deleteSend + name, true);
-  	
+    var deleteSend = {job_ID:null, name:null};
+	deleteSend.job_ID = event.target.parentElement.parentElement.id
+	deleteSend.name = volName
+//    console.log(deleteSend)
+    req.open("POST", '/DeleteVolApp', true);
+	req.setRequestHeader('Content-Type', 'application/json');
+
     req.addEventListener('load',function(){
 		if(req.status >= 200 && req.status < 400){
-            makeVolAppHistTable(JSON.parse(req.responseText),volName);
+			// console.log(JSON.parse(req.responseText));
+            makeVolAppHistTable(JSON.parse(req.responseText), volName);
 		}
 		else {
     		console.log("Error in network request: " + req.statusText);
   		}
 	});
- 
-    req.send(null);
+    req.send(JSON.stringify(deleteSend));
     event.preventDefault();
 
 }
@@ -105,6 +114,7 @@ function deleteJobAppForm(event, volName) {
 function makeVolJobHistTable(responseObj) {
 	
 	var jobHist = responseObj.volJobHist;
+	console.log(jobHist);
 	//delete old table
 	document.getElementById("jobHistTable").removeChild(document.getElementById("bodyjobHistTable"));
 	//amke new table 

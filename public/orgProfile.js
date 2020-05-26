@@ -49,11 +49,11 @@ document.getElementById("orgSignInButton").addEventListener('click', function (e
 			}
 			else {
                 var orgData = JSON.parse(req.responseText);
-                makeOrgJobTable(orgData, dataSend.name);
-                document.getElementById("orgName").textContent = dataSend.name;
-                var orgID = orgData.orgJobs[0].organization_ID;
+                var orgID = orgData.orgInfo[0].organization_ID;
                 document.getElementById("orgIDNum").textContent = orgID;
-                console.log(orgID);
+				console.log(orgData);
+				 makeOrgJobTable(orgData, dataSend.name);
+				 document.getElementById("orgName").textContent = dataSend.name;
 			}
 			
 		}
@@ -135,7 +135,6 @@ function makeOrgJobTable(responseObj, organization) {
 			deleteJobForm(event,organization);
         });
         document.getElementById("appsBtn" + row["job_ID"]).addEventListener("click", function () {
-            console.log("here3");
             var req = new XMLHttpRequest();       
             var dataSend =  {job_ID:null};
             dataSend.job_ID = event.target.parentElement.parentElement.id;
@@ -148,7 +147,7 @@ function makeOrgJobTable(responseObj, organization) {
                         alert("No Volunteer Found");
                     }
                     else {
-                        makeAppsTable(JSON.parse(req.responseText));
+                        makeAppsTable(JSON.parse(req.responseText), newRow.id);
                     }
                     
                 }
@@ -167,31 +166,34 @@ function makeOrgJobTable(responseObj, organization) {
 };
 
 
-function deleteJobForm(event, volName) {
+
+function deleteJobForm(event, orgName) {
 	var req = new XMLHttpRequest();
-	var url = '?id=';
-	var name = '&name=' + volName;
-	console.log(volName);
-    var deleteSend = null;
-    deleteSend = event.target.parentElement.parentElement.id
-   console.log(deleteSend)
-    req.open("delete", '/DeleteVolApp' + url + deleteSend + name, true);
-  	
+	
+	console.log(orgName);
+    var deleteSend = {job_ID:null, name:null};
+	deleteSend.job_ID = event.target.parentElement.parentElement.id
+	deleteSend.name = orgName
+//    console.log(deleteSend)
+    req.open("POST", '/DeleteOrgJob', true);
+	req.setRequestHeader('Content-Type', 'application/json');
+
     req.addEventListener('load',function(){
 		if(req.status >= 200 && req.status < 400){
-            // makeVolAppHistTable(JSON.parse(req.responseText),volName);
+			// console.log(JSON.parse(req.responseText));
+            makeOrgJobTable(JSON.parse(req.responseText), orgName);
 		}
 		else {
     		console.log("Error in network request: " + req.statusText);
   		}
 	});
- 
-    req.send(null);
+    req.send(JSON.stringify(deleteSend));
     event.preventDefault();
 
 }
 
-function makeAppsTable(responseObj) {
+function makeAppsTable(responseObj, jobID) {
+	console.log(jobID);
 	var apps = responseObj.orgJobs;
 	//delete old table
 	document.getElementById("orgJobTable").removeChild(document.getElementById("bodyOrgJobTable"));
@@ -222,20 +224,20 @@ function makeAppsTable(responseObj) {
     //make a row for each row in returned Json data
 	apps.forEach(function(row) {
 		var newRow = document.createElement("tr");
-		newRow.id = row["job_ID"];
+		newRow.id = row["volunteer_ID"];
 
 		var volID1 = document.createElement("td");
-		volID1.id = "volID"+ row["job_ID"]
+		volID1.id = "volID"+ row["volunteer_ID"]
 		volID1.textContent = row["volunteer_ID"];
 		newRow.appendChild(volID1);
 
         var volName1 = document.createElement("td");
-		volName1.id = "volName"+ row["job_ID"]
+		volName1.id = "volName"+ row["volunteer_ID"]
 		volName1.textContent = row["volunteer_Name"];
 		newRow.appendChild(volName1);
 
         var approve1 = document.createElement('input');
-		approve1.id = "approve"+ row["job_ID"]
+		approve1.id = "approve"+ row["volunteer_ID"]
         approve1.type = "checkbox";
         if(row["approved"] == 1) {
             approve1.checked = 1;
@@ -247,9 +249,9 @@ function makeAppsTable(responseObj) {
         
         //make view applciants button
 		var updateCell = document.createElement("td")
-		updateCell.id = "update"+ row["job_ID"]
+		updateCell.id = "update"+ row["volunteer_ID"]
 		var updateBtn = document.createElement('button');
-		updateBtn.id = "updateBtn"+ row["job_ID"];
+		updateBtn.id = "updateBtn"+ row["volunteer_ID"];
 		updateBtn.className = "btn btn-primary";
 		updateCell.appendChild(updateBtn);
 		newRow.appendChild(updateCell);
@@ -259,11 +261,41 @@ function makeAppsTable(responseObj) {
 		//add row
 		bodyT.appendChild(newRow);
 		
-        document.getElementById("updateBtn" + row["job_ID"]).addEventListener("click", function () {
-			
+        document.getElementById("updateBtn" + row["volunteer_ID"]).addEventListener("click", function () {
+			updateApp(event, jobID);
         });
         
 
     });
     
 };
+
+function updateApp(event,jobID) {
+	var req = new XMLHttpRequest();
+    var deleteSend = {job_ID:null, volunteer_ID:null, approved:null};
+	deleteSend.job_ID = jobID
+	rowID = event.target.parentElement.parentElement.id;
+	deleteSend.volunteer_ID = rowID;
+	if(document.getElementById("approve" + rowID).checked) {
+		deleteSend.approved = 1;
+	}
+	else {
+		deleteSend.approved = 0;
+	}
+//    console.log(deleteSend)
+    req.open("POST", '/UpdateApp', true);
+	req.setRequestHeader('Content-Type', 'application/json');
+
+    req.addEventListener('load',function(){
+		if(req.status >= 200 && req.status < 400){
+			// console.log(JSON.parse(req.responseText));
+            makeAppsTable(JSON.parse(req.responseText), jobID);
+		}
+		else {
+    		console.log("Error in network request: " + req.statusText);
+  		}
+	});
+    req.send(JSON.stringify(deleteSend));
+    event.preventDefault();
+
+}

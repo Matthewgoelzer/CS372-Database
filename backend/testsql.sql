@@ -44,6 +44,7 @@ CREATE TABLE volunteer_Histories (
     FOREIGN KEY (job_ID) REFERENCES job_Postings(job_ID)
 ) ENGINE=InnoDB;
 
+/* testing data inserts */
 INSERT INTO nonprofit_Organizations (organization_Name) VALUES ("nonprofit-organization-1");
 
 INSERT INTO job_Postings (job_Title, organization_ID) VALUES ("Job_Title-1", (SELECT organization_ID FROM nonprofit_Organizations WHERE organization_Name = "nonprofit-organization-1"));

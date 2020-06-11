@@ -9,10 +9,11 @@ app.use(bodyPar.json());
 
 app.use(express.static(__dirname));
 
+// load main page
 app.get("/", function(req, res) {
     res.sendFile(__dirname + '/index.html');
-})
-
+});
+// load jobs on search
 app.get('/SearchLoaded', function(req,res,next){
     var context = {};
     mysql.pool.query('SELECT * FROM job_Postings', function(err, rows, fields){
@@ -25,6 +26,8 @@ app.get('/SearchLoaded', function(req,res,next){
         res.send(JSON.stringify(rows));
     });
 });
+
+// inset volunteer info into job_applicants 
 app.post("/jobApply", function(req, res) {
     // get data from forms and add to the table called user..
 
@@ -45,6 +48,8 @@ app.post("/jobApply", function(req, res) {
     });
     
 });
+
+// search for job or organization on job page
 app.post('/Search', function(req,res,next){
     var context = {};
     mysql.pool.query('SELECT * FROM `job_Postings` WHERE job_Title =?', [req.body.search], function(err, rows, fields){
@@ -75,6 +80,7 @@ app.post('/Search', function(req,res,next){
     });
 });
 
+// make volunteer profile
 app.post('/NewVolP', function(req,res,next){
     // get data from forms and add to the table called user..
     mysql.pool.query('INSERT INTO `volunteer_Profiles` (`volunteer_ID`, `volunteer_Name`, `volunteer_Email`, `volunteer_DOB`, `location`) VALUES (NULL, ?, ?, ?, ?)', 
@@ -89,6 +95,7 @@ app.post('/NewVolP', function(req,res,next){
     });
 });
 
+// make new organization profile
 app.post('/NewOrgP', function(req,res,next){
     // get data from forms and add to the table called user..
     console.log(req.body);
@@ -104,6 +111,7 @@ app.post('/NewOrgP', function(req,res,next){
     });
 });
 
+// make new job
 app.post('/NewJob', function(req,res,next){
     // get data from forms and add to the table called user..
     console.log(req.body);
@@ -119,6 +127,7 @@ app.post('/NewJob', function(req,res,next){
     });
 });
 
+// delete volunteer application 
 app.post('/DeleteVolApp',function(req,res,next){
     //delete row with id
     var context = {};
@@ -139,6 +148,7 @@ app.post('/DeleteVolApp',function(req,res,next){
     });
 });
 
+// delete organization job
 app.post('/DeleteOrgJob',function(req,res,next){
     //delete row with id
     var context = {};
@@ -160,6 +170,7 @@ app.post('/DeleteOrgJob',function(req,res,next){
     });
 });
 
+// sign in for volunteer profile. Loads job applications and job history for volunteer
 app.post('/VolSignIn', function(req,res,next){
     var context = {};
     
@@ -192,6 +203,7 @@ app.post('/VolSignIn', function(req,res,next){
     });
 });
 
+// organization sign in. Displays job postings for organization
 app.post('/OrgSignIn', function(req,res,next){
     var context = {};
     mysql.pool.query('SELECT job_Title, job_ID, organization_ID FROM `job_Postings`  WHERE organization_ID = (SELECT organization_ID FROM `nonprofit_Organizations` WHERE organization_Name = ?)', [req.body.name], function(err, rows, fields){
@@ -214,6 +226,7 @@ app.post('/OrgSignIn', function(req,res,next){
     });
 });
 
+// get applications for organization job posting
 app.post('/OrgJobApps', function(req,res,next){
     var context = {};
     mysql.pool.query('SELECT job_Applicants.volunteer_ID, volunteer_Profiles.volunteer_Name, job_Applicants.approved FROM `job_Applicants` INNER JOIN `volunteer_Profiles` ON job_Applicants.volunteer_ID = volunteer_Profiles.volunteer_ID WHERE job_ID = ?', [req.body.job_ID], function(err, rows, fields){
@@ -227,6 +240,7 @@ app.post('/OrgJobApps', function(req,res,next){
     });
 });
 
+// update job_applicants application to either approved or not approved
 app.post('/UpdateApp',function(req,res,next){
     //delete row with id
     var context = {};
